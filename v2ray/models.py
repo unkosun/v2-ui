@@ -1,8 +1,49 @@
 import json
 
-from sqlalchemy import Column, Integer, String, BIGINT, Boolean
+from sqlalchemy import Column, Integer, String, BIGINT, Boolean, DATETIME
+from datetime import datetime
 
 from init import db
+
+
+class Users(db.Model):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    identifier = Column(String(20), nullable=False)
+    uuid = Column(String(40), unique=True, nullable=False)
+    alterId = Column(Integer, default=4, nullable=False)
+    creator = Column(String(20))
+    duration = Column(Integer)
+    startDate = Column(DATETIME)
+    endDate = Column(DATETIME)
+
+    def __init__(self, uuid=None, identifier=None, alterId=None, creator=None, duration=0, startDate=datetime.now(),
+                 endDate=datetime.now()):
+        self.uuid = uuid
+        self.identifier = identifier
+        self.alterId = alterId
+        self.creator = creator
+        self.duration = duration
+        self.startDate = startDate
+        self.endDate = endDate
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'uuid': self.uuid,
+            'alterId': self.alterId,
+            'remark': self.remark
+        }
+
+    def to_v2_json(self):
+        return {
+            'id': self.uuid,
+            'alterId': self.alterId,
+            'email': self.remark
+        }
+
+    def to_v2_str(self):
+        return json.dumps(self.to_v2_json(), indent=2, separators=(',', ': '), sort_keys=True, ensure_ascii=False)
 
 
 class Inbound(db.Model):

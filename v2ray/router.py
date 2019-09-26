@@ -29,6 +29,23 @@ def accounts():
     return render_template('v2ray/accounts.html', **common_context, inbounds=inbs)
 
 
+@v2ray_bp.route('/users/', methods=['GET'])
+def users():
+    from init import common_context
+    inbs = Inbound.query.all()
+    inbs = '[' + ','.join([json.dumps(inb.to_json(), ensure_ascii=False) for inb in inbs]) + ']'
+    return render_template('v2ray/users.html', **common_context, inbounds=inbs)
+
+
+@v2ray_bp.route('user/add', methods=['POST'])
+def add_user():
+    return jsonify(
+        Msg(True,
+            gettext(u'Successfully added, will take effect within %(seconds)d seconds')
+            )
+    )
+
+
 @v2ray_bp.route('/clients/', methods=['GET'])
 def clients():
     from init import common_context
