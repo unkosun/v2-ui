@@ -22,7 +22,7 @@
                     <transition name="list" appear>
                         <a-card hoverable style="margin-bottom: 20px;">
                             <div slot="title">
-                                <a-button type="primary" icon="plus" @click="openAddUser"></a-button>
+                                <a-button type="primary" icon="plus" @click="openAddCustomer"></a-button>
                             </div>
                             <a-row>
                                 <a-input v-model="searchKey" placeholder="{{ _('search') }}" autofocus></a-input>
@@ -33,7 +33,7 @@
                                     <a-tag color="green">{{ 100 }} / {{ 200 }}</a-tag>
                                 </a-col>
                                 <a-col :xs="24" :sm="24" :lg="12">
-                                    {{ _('total users') }}：
+                                    {{ _('total customers') }}：
                                     <a-tag color="green">{{ 300 }}</a-tag>
                                 </a-col>
                             </a-row>
@@ -314,13 +314,13 @@
                         });
                     }
                 },
-                openAddUser() {
+                openAddCustomer() {
                     inModal.show({
-                        title: '{{ _('add user') }}',
+                        title: '{{ _('add customer') }}',
                         okText: '{{ _('add') }}',
                         confirm: () => {
                             inModal.loading();
-                            this.addUser(inModal.inbound, () => inModal.closeLoading());
+                            this.addCustomer(inModal.inbound, () => inModal.closeLoading());
                         }
                     });
                 },
@@ -336,13 +336,17 @@
                         }
                     });
                 },
-                addUser(user, callback) {
+                addCustomer(customer, callback) {
                     let data = {
-                        uuid: user.uuid,
-                        alterId: user.alterId,
-                        remark: user.remark,
+                        uuid: customer.uuid,
+                        alterId: customer.alterId,
+                        identifier: customer.identifier,
+                        creator: customer.creator,
+                        duration: customer.duration,
+                        startDate: customer.startDate,
+                        endDate: customer.endDate
                     };
-                    this.submit('/v2ray/user/add', data, inModal, callback, callback);
+                    this.submit('/v2ray/customer/add', data, inModal, callback, callback);
                 },
                 updateInbound(inbound, callback) {
                     let data = {
@@ -405,7 +409,7 @@
         });
 
     </script>
-    {% include 'v2ray/inbound_modal.html' %}
+    {% include 'v2ray/customer_modal.html' %}
     {% include 'common/text_modal.html' %}
     {% include 'common/qrcode_modal.html' %}
     {% include 'common/prompt_modal.html' %}

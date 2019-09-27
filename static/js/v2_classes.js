@@ -748,6 +748,25 @@ Inbound.VmessSettings.Vmess = class extends V2CommonClass {
     }
 };
 
+class Customer extends V2CommonClass{
+    constructor(identifier=null,
+                uuid=randomUUID(),
+                alterId=4,
+                creator='S',
+                duration=0,
+                startDate=Date.now(),
+                endDate=Date.now()){
+        super();
+        this.identifier = identifier;
+        this.uuid = uuid;
+        this.alterId = alterId;
+        this.creator = creator;
+        this.duration = duration;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+}
+
 Inbound.ShadowsocksSettings = class extends Inbound.Settings {
     constructor(protocol,
                 method=SSMethods.AES_256_GCM,

@@ -1,0 +1,68 @@
+<a-modal id="inbound-modal" v-model="inModal.visible" :title="inModal.title" @ok="inModal.ok"
+         :confirm-loading="inModal.confirmLoading" :closable="true"
+         :ok-text="inModal.okText" cancel-text="{{ _('close') }}">
+
+    <!-- base -->
+    <a-form layout="inline">
+        <a-form-item label="{{ _('identifier') }}">
+            <a-input v-model.trim="inModal.inbound.remark"></a-input>
+        </a-form-item>
+        <a-form-item label="{{ _('uuid') }}">
+            <a-input v-model.trim="inModal.inbound.listen"></a-input>
+        </a-form-item>
+        <a-form-item label="{{ _('alter id') }}">
+            <a-input type="number" min="0" max="65535" defaultValue="4" v-model.number="inModal.inbound.port"></a-input>
+        </a-form-item>
+        <a-form-item label="{{ _('start date') }}">
+            <a-input type="date" v-model.number="inModal.inbound.port"></a-input>
+        </a-form-item>
+        <a-form-item label="{{ _('end date') }}">
+            <a-input type="date" v-model.number="inModal.inbound.port"></a-input>
+        </a-form-item>
+    </a-form>
+
+</a-modal>
+<script>
+
+    const inModal = {
+        title: '',
+        visible: false,
+        confirmLoading: false,
+        okText: '{{ _('confirm') }}',
+        confirm: null,
+        inbound: new Inbound(),
+        ok() {
+            execute(inModal.confirm);
+        },
+        show({ title='', okText='{{ _('confirm') }}', inbound=null, confirm=()=>{} }) {
+            this.title = title;
+            this.okText = okText;
+            if (inbound) {
+                this.inbound = Inbound.fromJson(inbound.toJson());
+            } else {
+                this.inbound = new Inbound();
+            }
+            this.confirm = confirm;
+            this.visible = true;
+        },
+        close() {
+            inModal.visible = false;
+            inModal.closeLoading();
+        },
+        loading() {
+            inModal.confirmLoading = true;
+        },
+        closeLoading() {
+            inModal.confirmLoading = false;
+        }
+    };
+
+    new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#inbound-modal',
+        data: {
+            inModal: inModal
+        }
+    });
+
+</script>

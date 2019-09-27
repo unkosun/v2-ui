@@ -29,19 +29,26 @@ def accounts():
     return render_template('v2ray/accounts.html', **common_context, inbounds=inbs)
 
 
-@v2ray_bp.route('/users/', methods=['GET'])
-def users():
+@v2ray_bp.route('/customers/', methods=['GET'])
+def customers():
     from init import common_context
     inbs = Inbound.query.all()
     inbs = '[' + ','.join([json.dumps(inb.to_json(), ensure_ascii=False) for inb in inbs]) + ']'
-    return render_template('v2ray/users.html', **common_context, inbounds=inbs)
+    return render_template('v2ray/customers.html', **common_context, inbounds=inbs)
 
 
-@v2ray_bp.route('user/add', methods=['POST'])
-def add_user():
+@v2ray_bp.route('customer/add', methods=['POST'])
+def add_customer():
+    identifier = request.form['identifier']
+    uuid = request.form['uuid']
+    alterId = request.form['alterId']
+    creator = request.form['creator']
+    duration = request.form['duration']
+    startDate = request.form['startDate']
+    endDate = request.form['endDate']
     return jsonify(
         Msg(True,
-            gettext(u'Successfully added, will take effect within %(seconds)d seconds')
+            gettext(request.form)
             )
     )
 

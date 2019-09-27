@@ -6,8 +6,8 @@ from datetime import datetime
 from init import db
 
 
-class Users(db.Model):
-    __tablename__ = 'users'
+class Customers(db.Model):
+    __tablename__ = 'customers'
     id = Column(Integer, primary_key=True, autoincrement=True)
     identifier = Column(String(20), nullable=False)
     uuid = Column(String(40), unique=True, nullable=False)
@@ -31,15 +31,19 @@ class Users(db.Model):
         return {
             'id': self.id,
             'uuid': self.uuid,
+            'identifier': self.identifier,
             'alterId': self.alterId,
-            'remark': self.remark
+            'creator': self.creator,
+            'duration': self.duration,
+            'startDate': self.startDate,
+            'endDate': self.endDate
         }
 
     def to_v2_json(self):
         return {
             'id': self.uuid,
             'alterId': self.alterId,
-            'email': self.remark
+            'email': self.identifier
         }
 
     def to_v2_str(self):
