@@ -2,12 +2,13 @@ import json
 
 from flask import Blueprint, render_template, jsonify, request
 from flask_babel import gettext
+from datetime import datetime
 
 from base.models import Msg
 from init import db
 from util import config, server_info
 from util.v2_jobs import v2_config_change
-from v2ray.models import Inbound
+from v2ray.models import Inbound, Customers
 
 v2ray_bp = Blueprint('v2ray', __name__, url_prefix='/v2ray')
 
@@ -32,9 +33,9 @@ def accounts():
 @v2ray_bp.route('/customers/', methods=['GET'])
 def customers():
     from init import common_context
-    inbs = Inbound.query.all()
-    inbs = '[' + ','.join([json.dumps(inb.to_json(), ensure_ascii=False) for inb in inbs]) + ']'
-    return render_template('v2ray/customers.html', **common_context, inbounds=inbs)
+    custms = Customers.query.all()
+    custms = '[' + ','.join([json.dumps(ctm.to_json(), ensure_ascii=False) for ctm in custms]) + ']'
+    return render_template('v2ray/customers.html', **common_context, customers=custms)
 
 
 @v2ray_bp.route('customer/add', methods=['POST'])
@@ -44,8 +45,14 @@ def add_customer():
     alterId = request.form['alterId']
     creator = request.form['creator']
     duration = request.form['duration']
-    startDate = request.form['startDate']
-    endDate = request.form['endDate']
+    startDate = datetime.strptime(request.form['startDate'], '%Y-%m-%d')
+    endDate = datetime.strptime(request.form['endDate'], '%Y-%m-%d')
+    customer = Customers(identifier, uuid, alterId, creator, duration, startDate, endDate)
+    try:
+        db.session.add(customer)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(Msg(False, gettext(str(e))))
     return jsonify(
         Msg(True,
             gettext(request.form)

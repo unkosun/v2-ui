@@ -17,10 +17,10 @@ class Customers(db.Model):
     startDate = Column(DATETIME)
     endDate = Column(DATETIME)
 
-    def __init__(self, uuid=None, identifier=None, alterId=None, creator=None, duration=0, startDate=datetime.now(),
-                 endDate=datetime.now()):
-        self.uuid = uuid
+    def __init__(self, identifier=None, uuid=None, alterId=None, creator=None, duration=0,
+                 startDate=datetime.now().date(), endDate=datetime.now().date()):
         self.identifier = identifier
+        self.uuid = uuid
         self.alterId = alterId
         self.creator = creator
         self.duration = duration
@@ -35,8 +35,8 @@ class Customers(db.Model):
             'alterId': self.alterId,
             'creator': self.creator,
             'duration': self.duration,
-            'startDate': self.startDate,
-            'endDate': self.endDate
+            'startDate': self.startDate.strftime('%Y-%m-%d'),
+            'endDate': self.endDate.strftime('%Y-%m-%d')
         }
 
     def to_v2_json(self):

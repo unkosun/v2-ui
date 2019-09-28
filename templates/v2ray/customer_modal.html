@@ -3,22 +3,54 @@
          :ok-text="inModal.okText" cancel-text="{{ _('close') }}">
 
     <!-- base -->
-    <a-form layout="inline">
-        <a-form-item label="{{ _('identifier') }}">
-            <a-input v-model.trim="inModal.inbound.remark"></a-input>
-        </a-form-item>
-        <a-form-item label="{{ _('uuid') }}">
-            <a-input v-model.trim="inModal.inbound.listen"></a-input>
-        </a-form-item>
-        <a-form-item label="{{ _('alter id') }}">
-            <a-input type="number" min="0" max="65535" defaultValue="4" v-model.number="inModal.inbound.port"></a-input>
-        </a-form-item>
-        <a-form-item label="{{ _('start date') }}">
-            <a-input type="date" v-model.number="inModal.inbound.port"></a-input>
-        </a-form-item>
-        <a-form-item label="{{ _('end date') }}">
-            <a-input type="date" v-model.number="inModal.inbound.port"></a-input>
-        </a-form-item>
+    <a-form layout="formLayout">
+        <a-row>
+            <a-col :span="24">
+                <a-form-item label="{{ _('identifier') }}">
+                    <a-input v-model.trim="inModal.customer.identifier" required></a-input>
+                </a-form-item>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-form-item label="{{ _('uuid') }}">
+                <a-input v-model.trim="inModal.customer.uuid" required></a-input>
+            </a-form-item>
+        </a-row>
+        <a-row>
+            <a-col :span="12">
+                <a-form-item label="{{ _('start date') }}">
+                    <a-input type="date" v-model="inModal.customer.startDate" required></a-input>
+                </a-form-item>
+            </a-col>
+            <a-col :span="12">
+                <a-form-item label="{{ _('end date') }}">
+                    <a-input type="date" v-model="inModal.customer.endDate" required></a-input>
+                </a-form-item>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="12">
+                <a-form-item label="{{ _('duration') }}">
+                    <a-input type="number" min="0" v-model.number="inModal.customer.duration" required></a-input>
+                </a-form-item>
+            </a-col>
+            <a-col :span="12">
+                <a-form-item label="{{ _('alter id') }}">
+                    <a-input type="number" min="0" max="65535" defaultValue="4"
+                             v-model.number="inModal.customer.alterId" required></a-input>
+                </a-form-item>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="12">
+                <a-form-item label="{{ _('creator') }}">
+                    <a-select style="width: 160px;" v-model="inModal.customer.creator" required>
+                        <a-select-option value="N"> Nero </a-select-option>
+                        <a-select-option value="S"> Style </a-select-option>
+                    </a-select>
+                </a-form-item>
+            </a-col>
+        </a-row>
     </a-form>
 
 </a-modal>
@@ -30,17 +62,17 @@
         confirmLoading: false,
         okText: '{{ _('confirm') }}',
         confirm: null,
-        inbound: new Inbound(),
+        customer: new Customer(),
         ok() {
             execute(inModal.confirm);
         },
-        show({ title='', okText='{{ _('confirm') }}', inbound=null, confirm=()=>{} }) {
+        show({ title='', okText='{{ _('confirm') }}', customer=null, confirm=()=>{} }) {
             this.title = title;
             this.okText = okText;
-            if (inbound) {
-                this.inbound = Inbound.fromJson(inbound.toJson());
+            if (customer) {
+                this.customer = Customer.fromJson(customer.toJson());
             } else {
-                this.inbound = new Inbound();
+                this.customer = new Customer();
             }
             this.confirm = confirm;
             this.visible = true;
