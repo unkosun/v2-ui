@@ -38,6 +38,11 @@ def customers():
     return render_template('v2ray/customers.html', **common_context, customers=custms)
 
 
+@v2ray_bp.route('/customers/data', methods=['GET'])
+def list_customers():
+    return jsonify([ctm.to_json() for ctm in Customers.query.all()])
+
+
 @v2ray_bp.route('customer/add', methods=['POST'])
 def add_customer():
     identifier = request.form['identifier']
@@ -55,7 +60,36 @@ def add_customer():
         return jsonify(Msg(False, gettext(str(e))))
     return jsonify(
         Msg(True,
-            gettext(request.form)
+            gettext(u'Successfully added.')
+            )
+    )
+
+
+@v2ray_bp.route('/customer/del/<uuid>', methods=['POST'])
+def del_customer(uuid):
+    Customers.query.filter_by(uuid=uuid).delete()
+    db.session.commit()
+    return jsonify(
+        Msg(True,
+            gettext(u'Successfully deleted.')
+            )
+    )
+
+
+@v2ray_bp.route('/customer/update/<uuid>', methods=['POST'])
+def update_customer(uuid):
+    updates = {}
+    add_if_not_none(updates, 'identifier', request.form.get('identifier'))
+    add_if_not_none(updates, 'startDate', datetime.strptime(request.form.get('startDate'), '%Y-%m-%d'))
+    add_if_not_none(updates, 'endDate', datetime.strptime(request.form.get('endDate'), '%Y-%m-%d'))
+    add_if_not_none(updates, 'duration', request.form.get('duration'))
+    add_if_not_none(updates, 'alterId', request.form.get('alterId'))
+    add_if_not_none(updates, 'creator', request.form.get('creator'))
+    Customers.query.filter_by(uuid=uuid).update(updates)
+    db.session.commit()
+    return jsonify(
+        Msg(True,
+            gettext(u'Successfully updated.')
             )
     )
 

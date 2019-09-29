@@ -43,7 +43,7 @@
                         {{ _('No account, please add an account first') }}
                     </a-card>
                     <transition-group tag="div" name="list">
-                        <a-card v-for="customer in searchedCustomers" :key="customer.identifier" hoverable>
+                        <a-card v-for="customer in searchedCustomers" :key="customer.identifier" hoverable style="width: 20%; float:left">
                             <div slot="title">
                                 <a-tag class="hidden-sm-and-down" color="green">vmess</a-tag>
                                 <a-button type="primary" icon="qrcode"
@@ -51,8 +51,8 @@
                                                     '{{ _('qrcode') }}',
                                                     '',
                                                     '{{ _('copy link') }}')"></a-button>
-                                <a-button icon="edit" @click="openEditInbound(customer)"></a-button>
-                                <a-button style="float: right;" type="danger" icon="delete" @click="delInbound(inbound)"></a-button>
+                                <a-button icon="edit" @click="openEditCustomer(customer)"></a-button>
+                                <a-button style="float: right;" type="danger" icon="delete" @click="delCustomer(customer)"></a-button>
                             </div>
                             <div>
                                 <a-row>
@@ -72,14 +72,6 @@
                                             <a-tag v-if="customer.enable" color="green">{{ _('yes') }}</a-tag>
                                             <a-tag v-else color="red">{{ _('no') }}</a-tag>
                                         </a-popconfirm>
-                                    </a-col>
-                                    <a-col :xs="24" :sm="24" :lg="12">
-                                        IP：
-                                        <a-tag color="green">''0.0.0.0''</a-tag>
-                                    </a-col>
-                                    <a-col :xs="24" :sm="24" :lg="12">
-                                        {{ _('port') }}：
-                                        <a-tag color="green">7070</a-tag>
                                     </a-col>
                                 </a-row>
                             </div>
@@ -114,7 +106,7 @@
                 getCustomers() {
                     this.loading();
                     get({
-                        url: '/v2ray/customers',
+                        url: '/v2ray/customers/data',
                         success: data => {
                             this.setCustomers(data);
                             this.loading(false);
@@ -124,6 +116,7 @@
                 },
                 setCustomers(customers) {
                     this.customers = customers.map(customer => {
+                        customer.enable = customer.endDate
                         return Customer.fromJson(customer);
                     }).reverse();
                     this.searchCustomers(this.searchKey);
@@ -150,15 +143,15 @@
                         }
                     });
                 },
-                openEditInbound(inbound) {
+                openEditCustomer(customer) {
                     inModal.show({
-                        title: '{{ _('update account') }}',
+                        title: '{{ _('update customer') }}',
                         okText: '{{ _('update') }}',
-                        inbound: inbound,
+                        customer: customer,
                         confirm: () => {
                             inModal.loading();
-                            inModal.inbound.id = inbound.id;
-                            this.updateInbound(inModal.inbound, () => inModal.closeLoading());
+                            inModal.customer.uuid = customer.uuid;
+                            this.updateCustomer(inModal.customer, () => inModal.closeLoading());
                         }
                     });
                 },
@@ -174,27 +167,24 @@
                     };
                     this.submit('/v2ray/customer/add', data, inModal, callback, callback);
                 },
-                updateInbound(inbound, callback) {
+                updateCustomer(customer, callback) {
                     let data = {
-                        port: inbound.port,
-                        listen: inbound.listen,
-                        protocol: inbound.protocol,
-                        settings: inbound.settings.toString(false),
-                        stream_settings: inbound.stream.toString(false),
-                        sniffing: [Protocols.VMESS, Protocols.SHADOWSOCKS].indexOf(inbound.protocol) >= 0 ?
-                            inbound.sniffing.toString(false) : '{}',
-                        remark: inbound.remark,
-                        enable: inbound.enable,
+                        identifier: customer.identifier,
+                        uuid: customer.uuid,
+                        alterId: customer.alterId,
+                        creator: customer.creator,
+                        startDate: customer.startDate,
+                        endDate: customer.endDate
                     };
-                    this.submit('/v2ray/inbound/update/' + inbound.id, data, inModal, callback, callback);
+                    this.submit('/v2ray/customer/update/' + customer.uuid, data, inModal, callback, callback);
                 },
-                delInbound(inbound) {
+                delCustomer(customer) {
                     this.$confirm({
-                        title: '{{ _('delete account') }}',
+                        title: '{{ _('delete customer') }}',
                         content: '{{ _('Cannot be restored after deletion, confirm deletion?') }}',
                         okText: '{{ _('delete') }}',
                         cancelText: '{{ _('cancel') }}',
-                        onOk: () => this.submit('/v2ray/inbound/del/' + inbound.id)
+                        onOk: () => this.submit('/v2ray/customer/del/' + customer.uuid)
                     });
                 },
                 resetTraffic(inbound) {
