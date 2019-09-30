@@ -1,5 +1,26 @@
 中文 | [English](README.en.md)
 
+# 开发人员
+## 项目中用到的第三方库
+- Flask
+- flask_babel
+- flask_sqlalchemy
+- tornado
+- schedule
+- psutil
+
+## 运行调试
+```bash
+python v2-ui.py
+```
+
+## 项目打包
+待更新
+
+***
+> 以下为原文
+***
+
 # 捐赠支持
 如果你觉得面板好用的话，可以考虑一下捐赠支持，金额随意，感谢支持。[点我](https://blog.sprov.xyz/go/support-paypal)
 
