@@ -1,5 +1,5 @@
 {% extends 'v2ray/base.html' %}
-{% block title %}{{ _('accounts') }}{% endblock %}
+{% block title %}{{ _('customers') }}{% endblock %}
 {% block head %}
     {{ super() }}
     <style>
@@ -43,7 +43,7 @@
                         {{ _('No account, please add an account first') }}
                     </a-card>
                     <transition-group tag="div" name="list">
-                        <a-card v-for="customer in searchedCustomers" :key="customer.identifier" hoverable style="width: 20%; float:left">
+                        <a-card v-for="customer in searchedCustomers" :key="customer.identifier" hoverable style="float:left">
                             <div slot="title">
                                 <a-tag class="hidden-sm-and-down" color="green">vmess</a-tag>
                                 <a-button type="primary" icon="qrcode"
@@ -51,6 +51,7 @@
                                                     '{{ _('qrcode') }}',
                                                     '',
                                                     '{{ _('copy link') }}')"></a-button>
+                                <a-button type="primary" icon="money-collect" @click="openRenewCustomer(customer)"></a-button>
                                 <a-button icon="edit" @click="openEditCustomer(customer)"></a-button>
                                 <a-button style="float: right;" type="danger" icon="delete" @click="delCustomer(customer)"></a-button>
                             </div>
@@ -66,12 +67,8 @@
                                     </a-col>
                                     <a-col :xs="24" :sm="24" :lg="12">
                                         {{ _('enable') }}：
-                                        <a-popconfirm :title="customer.enable ? '{{ _('Whether to disable') }}' : '{{ _('Whether to enable') }}'"
-                                                      @confirm="setEnable(customer, !customer.enable)"
-                                                      ok-text="{{ _('yes') }}" cancel-text="{{ _('no') }}">
-                                            <a-tag v-if="customer.enable" color="green">{{ _('yes') }}</a-tag>
-                                            <a-tag v-else color="red">{{ _('no') }}</a-tag>
-                                        </a-popconfirm>
+                                        <a-tag v-if="customer.enable" color="green">{{ _('yes') }}</a-tag>
+                                        <a-tag v-else color="red">{{ _('no') }}</a-tag>
                                     </a-col>
                                 </a-row>
                             </div>
@@ -116,7 +113,7 @@
                 },
                 setCustomers(customers) {
                     this.customers = customers.map(customer => {
-                        customer.enable = customer.endDate
+                        customer.enable = (new Date(Date.now())).getTime() < getDateFromStr(customer.endDate);
                         return Customer.fromJson(customer);
                     }).reverse();
                     this.searchCustomers(this.searchKey);
@@ -155,6 +152,27 @@
                         }
                     });
                 },
+                openRenewCustomer(customer) {
+                    reModal.show({
+                        title: '{{ _('renew customer') }}',
+                        okText: '{{ _('renew') }}',
+                        customer: customer,
+                        confirm: () => {
+                            reModal.loading();
+                            reModal.customer.uuid = customer.uuid;
+                            this.renewCustomer(reModal.customer, () => reModal.closeLoading());
+                        }
+                    });
+                },
+                renewCustomer(customer, callback){
+                    let data = {
+                        uuid: customer.uuid,
+                        startDate: renew.moStartDate,
+                        endDate: renew.moEndDate,
+                        duration: renew.total_duration,
+                    };
+                    this.submit('/v2ray/customer/update/' + customer.uuid, data, reModal, callback, callback);
+                },
                 addCustomer(customer, callback) {
                     let data = {
                         identifier: customer.identifier,
@@ -186,16 +204,6 @@
                         cancelText: '{{ _('cancel') }}',
                         onOk: () => this.submit('/v2ray/customer/del/' + customer.uuid)
                     });
-                },
-                resetTraffic(inbound) {
-                    this.submit('/v2ray/reset_traffic/' + inbound.id);
-                },
-                resetAllTraffic() {
-                    this.submit('/v2ray/reset_all_traffic');
-                },
-                setEnable(inbound, enable) {
-                    let data = {enable: enable};
-                    this.submit('/v2ray/inbound/update/' + inbound.id, data);
                 },
                 submit(url, data, modal, success, error) {
                     post({

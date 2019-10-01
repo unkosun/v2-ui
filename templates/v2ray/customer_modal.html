@@ -1,4 +1,4 @@
-<a-modal id="inbound-modal" v-model="inModal.visible" :title="inModal.title" @ok="inModal.ok"
+<a-modal id="customer-modal" v-model="inModal.visible" :title="inModal.title" @ok="inModal.ok"
          :confirm-loading="inModal.confirmLoading" :closable="true"
          :ok-text="inModal.okText" cancel-text="{{ _('close') }}">
 
@@ -54,6 +54,46 @@
     </a-form>
 
 </a-modal>
+<a-modal id="renew-modal" v-model="reModal.visible" :title="reModal.title" @ok="reModal.ok"
+         :confirm-loading="reModal.confirmLoading" :closable="true"
+         :ok-text="reModal.okText" cancel-text="{{ _('close') }}">
+
+    <!-- base -->
+    <a-form layout="formLayout">
+        <a-row>
+            <a-col :span="24">
+                <a-form-item label="{{ _('identifier') }}">
+                    <a-input v-model.trim="reModal.customer.identifier" disabled required></a-input>
+                </a-form-item>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :xs="24" :sm="12" lg="12">
+                <a-form-item label="{{ _('start date') }}">
+                    <a-input type="date" v-model="moStartDate" required></a-input>
+                </a-form-item>
+            </a-col>
+            <a-col :xs="24" :sm="12" lg="12">
+                <a-form-item label="{{ _('end date') }}">
+                    <a-input type="date" v-model="moEndDate" disabled required></a-input>
+                </a-form-item>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="12">
+                <a-form-item label="{{ _('adding duration') }}">
+                    <a-input type="number" min="0" defaultValue="1" v-model.number="add_duration" required></a-input>
+                </a-form-item>
+            </a-col>
+            <a-col :span="12">
+                <a-form-item label="{{ _('total duration') }}">
+                    <a-input type="number" min="0" v-model.number="total_duration" disabled></a-input>
+                </a-form-item>
+            </a-col>
+        </a-row>
+    </a-form>
+
+</a-modal>
 <script>
 
     const inModal = {
@@ -89,12 +129,71 @@
         }
     };
 
+    const reModal = {
+        title: '',
+        visible: false,
+        confirmLoading: false,
+        okText: '{{ _('renew') }}',
+        confirm: null,
+        customer: new Customer(),
+        ok() {
+            execute(reModal.confirm);
+        },
+        show({ title='', okText='{{ _('renew') }}', customer=null, confirm=()=>{} }) {
+            this.title = title;
+            this.okText = okText;
+            if (customer) {
+                this.customer = Customer.fromJson(customer.toJson());
+            } else {
+                alert('error in open modal')
+            }
+            renew.add_duration = 0;
+            renew.moStartDate = renew.isExpired ? getDate() : reModal.customer.startDate;
+            this.confirm = confirm;
+            this.visible = true;
+        },
+        close() {
+            reModal.visible = false;
+            reModal.closeLoading();
+        },
+        loading() {
+            reModal.confirmLoading = true;
+        },
+        closeLoading() {
+            reModal.confirmLoading = false;
+        }
+    };
+
     new Vue({
         delimiters: ['[[', ']]'],
-        el: '#inbound-modal',
+        el: '#customer-modal',
         data: {
             inModal: inModal
         }
+    });
+
+    var renew = new Vue({
+        el: '#renew-modal',
+        data: {
+            reModal: reModal,
+            moStartDate: getDate(),
+            add_duration: 0,
+        },
+        computed: {
+            isExpired: function() {
+                let today = new Date(Date.now());
+                let endDate = getDateFromStr(reModal.customer.endDate);
+                return today.getTime() > endDate.getTime();
+            },
+            moEndDate: function () {
+                let date = getDateFromStr(this.isExpired ? this.moStartDate : reModal.customer.endDate);
+                date.setDate(date.getDate() + (this.add_duration * 30));
+                return getDate(date);
+            },
+            total_duration: function () {
+                return reModal.customer.duration + this.add_duration;
+            }
+        },
     });
 
 </script>

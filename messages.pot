@@ -690,3 +690,34 @@ msgstr ""
 msgid "Reset add traffic successfully"
 msgstr ""
 
+#: template/v2ray/customers.html
+msgid "identifier"
+msgstr ""
+
+msgid "start date"
+msgstr ""
+
+msgid "end date"
+msgstr ""
+
+msgid "duration"
+msgstr ""
+
+msgid "creator"
+msgstr ""
+
+msgid "customers"
+msgstr ""
+
+msgid "update customer"
+msgstr ""
+
+msgid "renew customer"
+msgstr ""
+
+msgid "adding duration"
+msgstr ""
+
+msgid "total duration"
+msgstr ""
+

@@ -207,3 +207,12 @@ window.getDate = (datetime=Date.now()) => {
     let day =date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
     return  year + '-' + month + '-' + day;
 };
+
+window.getDateFromStr = (str) => {
+    let date_arr = str.split('-');
+    let date = new Date();
+    date.setFullYear(Number(date_arr[0]));
+    date.setMonth(Number(date_arr[1]) - 1);
+    date.setDate(Number(date_arr[2]));
+    return date;
+};

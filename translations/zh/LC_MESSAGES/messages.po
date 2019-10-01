@@ -693,3 +693,40 @@ msgstr "重置流量成功"
 msgid "Reset add traffic successfully"
 msgstr "重置所有流量成功"
 
+#: template/v2ray/customers.html
+msgid "identifier"
+msgstr "个人标识"
+
+msgid "start date"
+msgstr "开始日期"
+
+msgid "end date"
+msgstr "结束日期"
+
+msgid "duration"
+msgstr "时长"
+
+msgid "creator"
+msgstr "创建者"
+
+msgid "customers"
+msgstr "客户列表"
+
+msgid "update customer"
+msgstr "更新客户"
+
+msgid "delete customer"
+msgstr "删除客户"
+
+msgid "renew"
+msgstr "续费"
+
+msgid "renew customer"
+msgstr "续费"
+
+msgid "adding duration"
+msgstr "增加时长"
+
+msgid "total duration"
+msgstr "总时长"
+

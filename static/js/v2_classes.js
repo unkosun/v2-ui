@@ -755,7 +755,8 @@ class Customer extends V2CommonClass{
                 creator='S',
                 duration=0,
                 startDate=getDate(),
-                endDate=getDate()){
+                endDate=getDate(),
+                enable=false){
         super();
         this.identifier = identifier;
         this.uuid = uuid;
@@ -764,6 +765,7 @@ class Customer extends V2CommonClass{
         this.duration = duration;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.enable = enable;
     }
 
     static fromJson(json={}){
@@ -774,7 +776,8 @@ class Customer extends V2CommonClass{
             json.creator,
             json.duration,
             json.startDate,
-            json.endDate
+            json.endDate,
+            json.enable
         );
     }
 }
