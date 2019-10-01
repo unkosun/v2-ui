@@ -216,3 +216,54 @@ window.getDateFromStr = (str) => {
     date.setDate(Number(date_arr[2]));
     return date;
 };
+
+window.genVmessLink = (address, inbound, customer) => {
+    let network = inbound.stream.network;
+    let type = 'none';
+    let host = '';
+    let path = '';
+    if (network === 'tcp') {
+        let tcp = inbound.stream.tcp;
+        type = tcp.type;
+        if (type === 'http') {
+            let request = tcp.request;
+            path = request.path.join(',');
+            let index = request.headers.findIndex(header => header.name.toLowerCase() === 'host');
+            if (index >= 0) {
+                host = request.headers[index].value;
+            }
+        }
+    } else if (network === 'kcp') {
+        let kcp = inbound.stream.kcp;
+        type = kcp.type;
+    } else if (network === 'ws') {
+        let ws = inbound.stream.ws;
+        path = ws.path;
+        let index = ws.headers.findIndex(header => header.name.toLowerCase() === 'host');
+        if (index >= 0) {
+            host = ws.headers[index].value;
+        }
+    } else if (network === 'http') {
+        network = 'h2';
+        path = inbound.stream.http.path;
+        host = inbound.stream.http.host.join(',');
+    } else if (network === 'quic') {
+        type = inbound.stream.quic.type;
+        host = inbound.stream.quic.security;
+        path = inbound.stream.quic.key;
+    }
+    let obj = {
+        v: '2',
+        ps: inbound.remark,
+        add: address,
+        port: inbound.port,
+        id: customer.uuid,
+        aid: customer.alterId,
+        net: network,
+        type: type,
+        host: host,
+        path: path,
+        tls: inbound.stream.security,
+    };
+    return 'vmess://' + Inbound.base64(JSON.stringify(obj, null, 2));
+}

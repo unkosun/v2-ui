@@ -50,12 +50,6 @@
                         <a-card v-for="inbound in searchedInbounds" :key="inbound.id" hoverable>
                             <div slot="title">
                                 <a-tag class="hidden-sm-and-down" color="green">[[ inbound.protocol ]]</a-tag>
-                                <a-button v-if="[Protocols.VMESS, Protocols.SHADOWSOCKS].indexOf(inbound.protocol) >= 0"
-                                          type="primary" icon="qrcode"
-                                          @click="qrModal.show(
-                                                    '{{ _('qrcode') }}',
-                                                    inbound.genLink(inbound.listen === '0.0.0.0' ? ip : inbound.listen),
-                                                    '{{ _('copy link') }}')"></a-button>
                                 <a-button icon="edit" @click="openEditInbound(inbound)"></a-button>
                                 <a-button style="float: right;" type="danger" icon="delete" @click="delInbound(inbound)"></a-button>
                             </div>
@@ -100,14 +94,6 @@
                                     </a-col>
                                     <!-- vmess -->
                                     <template v-if="inbound.protocol === Protocols.VMESS">
-                                        <a-col :xs="24" :sm="24" :lg="12">
-                                            id：
-                                            <a-tag color="green">[[ inbound.settings.vmesses[0].id ]]</a-tag>
-                                        </a-col>
-                                        <a-col :xs="24" :sm="24" :lg="12">
-                                            {{ _('alter id') }}：
-                                            <a-tag color="green">[[ inbound.settings.vmesses[0].alterId ]]</a-tag>
-                                        </a-col>
                                         <a-col :xs="24" :sm="24" :lg="12">
                                             {{ _('method') }}：
                                             <a-tag v-if="inbound.settings.disableInsecure" color="green">

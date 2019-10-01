@@ -49,6 +49,10 @@ class Customers(db.Model):
     def to_v2_str(self):
         return json.dumps(self.to_v2_json(), indent=2, separators=(',', ': '), sort_keys=True, ensure_ascii=False)
 
+    @property
+    def is_expired(self):
+        return datetime.now() > self.endDate
+
 
 class Inbound(db.Model):
     __tablename__ = 'inbound'
@@ -107,3 +111,21 @@ class Inbound(db.Model):
 
     def to_v2_str(self):
         return json.dumps(self.to_v2_json(), indent=2, separators=(',', ': '), sort_keys=True, ensure_ascii=False)
+
+
+class Server(db.Model):
+    __tablename__ = 'servers'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    address = Column(String, nullable=False)
+    remark = Column(String(20), default='')
+
+    def __init__(self, address=None, remark=None):
+        self.address = address
+        self.remark = remark
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'address': self.address,
+            'remark': self.remark
+        }

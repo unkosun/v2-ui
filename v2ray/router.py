@@ -8,7 +8,7 @@ from base.models import Msg
 from init import db
 from util import config, server_info
 from util.v2_jobs import v2_config_change
-from v2ray.models import Inbound, Customers
+from v2ray.models import Inbound, Customers, Server
 
 v2ray_bp = Blueprint('v2ray', __name__, url_prefix='/v2ray')
 
@@ -34,8 +34,12 @@ def accounts():
 def customers():
     from init import common_context
     custms = Customers.query.all()
+    servers = Server.query.all()
+    inbs = Inbound.query.all()
     custms = '[' + ','.join([json.dumps(ctm.to_json(), ensure_ascii=False) for ctm in custms]) + ']'
-    return render_template('v2ray/customers.html', **common_context, customers=custms)
+    servers = '[' + ','.join([json.dumps(s.to_json(), ensure_ascii=False) for s in servers]) + ']'
+    inbs = '[' + ','.join([json.dumps(inb.to_json(), ensure_ascii=False) for inb in inbs]) + ']'
+    return render_template('v2ray/customers.html', **common_context, customers=custms, servers=servers, inbounds=inbs)
 
 
 @v2ray_bp.route('/customers/data', methods=['GET'])
@@ -44,6 +48,7 @@ def list_customers():
 
 
 @v2ray_bp.route('customer/add', methods=['POST'])
+@v2_config_change
 def add_customer():
     identifier = request.form['identifier']
     uuid = request.form['uuid']
@@ -66,6 +71,7 @@ def add_customer():
 
 
 @v2ray_bp.route('/customer/del/<uuid>', methods=['POST'])
+@v2_config_change
 def del_customer(uuid):
     Customers.query.filter_by(uuid=uuid).delete()
     db.session.commit()
@@ -77,6 +83,7 @@ def del_customer(uuid):
 
 
 @v2ray_bp.route('/customer/update/<uuid>', methods=['POST'])
+@v2_config_change
 def update_customer(uuid):
     updates = {}
     add_if_not_none(updates, 'identifier', request.form.get('identifier'))
@@ -189,6 +196,11 @@ def reset_all_traffic():
     Inbound.query.update({'up': 0, 'down': 0})
     db.session.commit()
     return jsonify(Msg(True, gettext('Reset add traffic successfully')))
+
+
+@v2ray_bp.route('servers', methods=['GET'])
+def get_servers():
+    return jsonify([s.to_json() for s in Server.query.all()])
 
 
 def add_if_not_none(d, key, value):

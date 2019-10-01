@@ -780,6 +780,7 @@ class Customer extends V2CommonClass{
             json.enable
         );
     }
+
 }
 
 Inbound.ShadowsocksSettings = class extends Inbound.Settings {

@@ -8,7 +8,7 @@ from threading import Timer
 
 from util import config, list_util, cmd_util, server_info, file_util
 from v2ray.exceptions import V2rayException
-from v2ray.models import Inbound
+from v2ray.models import Inbound, Customers
 
 
 class Protocols(Enum):
@@ -21,9 +21,13 @@ class Protocols(Enum):
 
 def gen_v2_config_from_db():
     inbounds = Inbound.query.filter_by(enable=True).all()
+    clients = [ctm.to_v2_json() for ctm in Customers.query.all() if not ctm.is_expired]
     inbounds = [inbound.to_v2_json() for inbound in inbounds]
     v2_config = json.loads(config.get_v2_template_config())
     v2_config['inbounds'] += inbounds
+    for _ in v2_config['inbounds']:
+        if _['protocol'] == 'vmess':
+            _['settings']['clients'] = clients
     return v2_config
 
 
