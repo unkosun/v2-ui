@@ -1,24 +1,38 @@
 <a-modal id="qrcode-modal" v-model="qrModal.visible" :title="qrModal.title"
          :closable="true" width="400px" :ok-text="qrModal.okText"
          cancel-text="{{ _('close') }}" :ok-button-props="{attrs:{id:'qr-modal-ok-btn'}}">
-    <a-tabs defaultActiveKey="1" type="card">
-        <a-tab-pane v-for="svr in servers" :tab="svr.remark" :key="svr.id">
-{#        <canvas id="qrCode" style="width: 100%; height: 100%;"></canvas>#}
-            <a-tabs @change="callback">
-                <a-tab-pane v-for="inb in inbounds" :tab="inb.port" :key="inb.id">
-                    [[ svr.address ]]:
+    <a-row>
+        <a-col :span="8">
+            <a-select style="width: 100%" v-model="qrModal.selectedSvr" placeholder="{{ _('server') }}">
+                <a-select-option v-for="svr in servers" :value="svr.id">
+                    [[ svr.remark ]]
+                </a-select-option>
+            </a-select>
+        </a-col>
+        <a-col :span="8">
+            <a-select style="width: 100%" v-model="qrModal.selectedInb" placeholder="{{ _('port') }}">
+                <a-select-option v-for="inb in inbounds" :value="inb.id">
                     [[ inb.port ]]
-                </a-tab-pane>
-            </a-tabs>
-        </a-tab-pane>
-    </a-tabs>
+                </a-select-option>
+            </a-select>
+        </a-col>
+        <a-col :span="6" style="float: right">
+            <a-button type="primary" @click="drawQrCode(1111)">{{ _('generate') }}</a-button>
+        </a-col>
+    </a-row>
+    <a-row>
+        <canvas id="qrCode" style="width: 100%; height: 100%;"></canvas>
+    </a-row>
 </a-modal>
 
 <script>
 
     const qrModal = {
         title: '',
+        selectedSvr: "",
+        selectedInb: "",
         customer: null,
+        content: "",
         okText: '',
         qrcode: null,
         clipboard: null,
@@ -35,15 +49,6 @@
                     });
                     this.clipboard.on('success', () => app.$message.success('{{ _('copied') }}'));
                 }
-                if (this.qrcode === null) {
-                    this.qrcode = new QRious({
-                        element: document.querySelector('#qrCode'),
-                        size: 260,
-                        value: content,
-                    });
-                } else {
-                    this.qrcode.value = content;
-                }
             });
         },
         close: function () {
@@ -57,10 +62,41 @@
         data: {
             qrModal: qrModal,
             servers: {{ servers | safe }},
-            inbounds: {{ inbounds | safe }}
+            inbounds: {{ inbounds | safe }},
         },
         methods: {
-            callback: function (activeKey) {
+            drawQrCode: function () {
+                let sel_svr = null;
+                let sel_inb = null;
+                for (let svr in this.servers){
+                    if (this.servers[svr].id === this.qrModal.selectedSvr)
+                        {
+                            sel_svr = this.servers[svr];
+                            break;
+                        }
+                }
+                for (let inb in this.inbounds){
+                    if (this.inbounds[inb].id === this.qrModal.selectedInb)
+                        {
+                            sel_inb = this.inbounds[inb];
+                            sel_inb.streamSettings = sel_inb.stream_settings;
+                            break;
+                        }
+                }
+                console.log(sel_svr.address);
+                console.log(sel_inb.port);
+                console.log(this.qrModal.customer.identifier);
+                let content = genVmessLink(sel_svr, sel_inb, this.qrModal.customer);
+                qrModal.content = content;
+                if (qrModal.qrcode === null) {
+                    qrModal.qrcode = new QRious({
+                        element: document.querySelector('#qrCode'),
+                        size: 260,
+                        value: content,
+                    });
+                } else {
+                    qrModal.qrcode.value = content;
+                }
             }
         },
     });

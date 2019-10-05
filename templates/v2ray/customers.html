@@ -49,7 +49,7 @@
                                 <a-button type="primary" icon="qrcode"
                                           @click="qrModal.show(
                                                     '{{ _('qrcode') }}',
-                                                    '',
+                                                    customer,
                                                     '{{ _('copy link') }}')"></a-button>
                                 <a-button type="primary" icon="money-collect" @click="openRenewCustomer(customer)"></a-button>
                                 <a-button icon="edit" @click="openEditCustomer(customer)"></a-button>

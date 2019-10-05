@@ -217,7 +217,8 @@ window.getDateFromStr = (str) => {
     return date;
 };
 
-window.genVmessLink = (address, inbound, customer) => {
+window.genVmessLink = (server, inbound, customer) => {
+    inbound = Inbound.fromJson(inbound)
     let network = inbound.stream.network;
     let type = 'none';
     let host = '';
@@ -254,8 +255,8 @@ window.genVmessLink = (address, inbound, customer) => {
     }
     let obj = {
         v: '2',
-        ps: inbound.remark,
-        add: address,
+        ps: server.remark + '-' + inbound.port,
+        add: server.address,
         port: inbound.port,
         id: customer.uuid,
         aid: customer.alterId,

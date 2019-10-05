@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-09-21 23:10+0800\n"
-"PO-Revision-Date: 2019-08-14 14:37+0800\n"
+"PO-Revision-Date: 2019-10-05 21:19+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
+
 
 #: init.py:95
 msgid "You has been logout, please refresh this page and login again"
@@ -103,6 +104,9 @@ msgstr "复制"
 #: templates/common/qrcode_modal.html:26 templates/common/text_modal.html:31
 msgid "copied"
 msgstr "复制成功"
+
+msgid "server"
+msgstr "服务器"
 
 #: templates/common/text_modal.html:6 templates/v2ray/accounts.html:32
 #: templates/v2ray/accounts.html:82

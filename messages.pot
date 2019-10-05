@@ -103,6 +103,9 @@ msgstr ""
 msgid "copied"
 msgstr ""
 
+msgid "server"
+msgstr ""
+
 #: templates/common/text_modal.html:6 templates/v2ray/accounts.html:32
 #: templates/v2ray/accounts.html:82
 msgid "download"
