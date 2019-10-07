@@ -29,12 +29,8 @@
                             </a-row>
                             <a-row>
                                 <a-col :xs="24" :sm="24" :lg="12">
-                                    {{ _('online') }} / {{ _('offline') }}：
-                                    <a-tag color="green">{{ 100 }} / {{ 200 }}</a-tag>
-                                </a-col>
-                                <a-col :xs="24" :sm="24" :lg="12">
                                     {{ _('total customers') }}：
-                                    <a-tag color="green">{{ 300 }}</a-tag>
+                                    <a-tag color="green">[[ customers.length ]]</a-tag>
                                 </a-col>
                             </a-row>
                         </a-card>
@@ -61,11 +57,11 @@
                                         {{ _('protocol') }}：
                                         <a-tag color="green">vmess</a-tag>
                                     </a-col>
-                                    <a-col :xs="24" :sm="24" :lg="12">
-                                        {{ _('remark') }}：
+                                    <a-col :xs="24" :sm="24" :lg="16">
+                                        {{ _('identifier') }}：
                                         <a-tag color="blue">[[ empDefault(customer.identifier, '{{ _('none') }}') ]]</a-tag>
                                     </a-col>
-                                    <a-col :xs="24" :sm="24" :lg="12">
+                                    <a-col :xs="24" :sm="24" :lg="8">
                                         {{ _('enable') }}：
                                         <a-tag v-if="customer.enable" color="green">{{ _('yes') }}</a-tag>
                                         <a-tag v-else color="red">{{ _('no') }}</a-tag>

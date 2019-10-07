@@ -79,6 +79,9 @@ msgstr "小时"
 msgid "days"
 msgstr "天"
 
+msgid "ports list"
+msgstr "端口列表"
+
 #: templates/common/prompt_modal.html:3 templates/v2ray/accounts.html:39
 #: templates/v2ray/accounts.html:89 templates/v2ray/accounts.html:375
 msgid "cancel"
@@ -716,11 +719,23 @@ msgstr "创建者"
 msgid "customers"
 msgstr "客户列表"
 
+msgid "add customer"
+msgstr "增加客户"
+
 msgid "update customer"
 msgstr "更新客户"
 
 msgid "delete customer"
 msgstr "删除客户"
+
+msgid "total customers"
+msgstr "客户总数"
+
+msgid "online"
+msgstr "在线"
+
+msgid "offline"
+msgstr "离线"
 
 msgid "renew"
 msgstr "续费"

@@ -47,7 +47,7 @@ def list_customers():
     return jsonify([ctm.to_json() for ctm in Customers.query.all()])
 
 
-@v2ray_bp.route('customer/add', methods=['POST'])
+@v2ray_bp.route('/customer/add', methods=['POST'])
 @v2_config_change
 def add_customer():
     identifier = request.form['identifier']

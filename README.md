@@ -15,13 +15,15 @@ python v2-ui.py [ resetconfig | resetuser | setport ]
 ```
 
 ## 翻译
-1. 如果有新加的单词，需要先编辑 [messages.pot](messages.pot) 文件，然后 `pybabel init -i messages.pot -d translations` 初始化语言目录
-2. 加入翻译，编辑 [translations/zh/LC_MESSAGES/message.po](translations/zh/LC_MESSAGES/messages.po)
+1. 如果要生成全新文件，需要先编辑 [messages.pot](messages.pot) 文件，然后 `pybabel init -i messages.pot -d translations` 初始化语言目录；如果只在原来的基础上补充，可以直接进入第二步
+2. 加入翻译，编辑 [translations/zh/LC_MESSAGES/message.po](translations/zh/LC_MESSAGES/messages.po) 填入 `msgstr`对应的译文；如果是补充，则在文件中直接添加 `msgid`, `msgstr`
 3. `pybabel compile -d translations` 编译所有翻译生成 `.mo` 文件
 
 
 ## 项目打包
-待更新
+`pyi-makespec v2-ui.py`
+
+`pyinstaller v2-ui.spec` 
 
 ***
 > 以下为原文
