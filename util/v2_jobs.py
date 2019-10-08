@@ -1,5 +1,7 @@
 import threading
 
+import schedule
+
 from init import db
 from util import config, v2_util
 from util.schedule_util import schedule_job
@@ -43,6 +45,12 @@ def traffic_job():
         db.session.commit()
 
 
+def update_config():
+    global __v2_config_changed
+    __v2_config_changed = True
+
+
 def init():
+    schedule.every().day.at("00:00").do(update_config)
     schedule_job(check_v2_config_job, config.get_v2_config_check_interval())
     schedule_job(traffic_job, config.get_traffic_job_interval())
