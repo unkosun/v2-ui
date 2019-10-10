@@ -11,7 +11,7 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
 from init import app, BASE_DIR
-from util import config
+from util import config, cmd2node
 
 
 def logging_init():
@@ -67,11 +67,15 @@ if __name__ == '__main__':
         elif sys.argv[1] == 'setport':
             config.update_setting_by_key('port', sys.argv[2])
             print('Set port to ' + sys.argv[2] + ' successfully')
+        elif sys.argv[1] == 'addnode' and len(sys.argv) == 4:
+            cmd2node.node_added(sys.argv[2], sys.argv[3])
+            # cmd2node.config_changed()
         else:
             print('Invalid command')
             print('resetconfig: Reset all panel settings to default values')
             print('resetuser: Reset username and password to \'admin\'')
             print('setport: Set port')
+            print('addnode: Add node server')
     else:
         logging_init()
         try:

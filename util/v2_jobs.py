@@ -3,7 +3,7 @@ import threading
 import schedule
 
 from init import db
-from util import config, v2_util
+from util import config, v2_util, cmd2node
 from util.schedule_util import schedule_job
 from v2ray.models import Inbound
 
@@ -27,6 +27,7 @@ def check_v2_config_job():
         with __lock:
             v2_config = v2_util.gen_v2_config_from_db()
             v2_util.write_v2_config(v2_config)
+            cmd2node.config_changed()
             __v2_config_changed = False
 
 
