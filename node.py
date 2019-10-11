@@ -47,26 +47,33 @@ def config_changed(conn_socket, filesize):
 
 if __name__ == "__main__":
     svr = socket(AF_INET, SOCK_STREAM)
-    svr.bind(("0.0.0.0", 40001))
+    try:
+        svr.bind(("0.0.0.0", 40001))
+    except OSError as e:
+        svr.setsockopt(SOL_SOCKET, SO_REUSEPORT)
+        svr.bind(("0.0.0.0", 40001))
     svr.listen(5)
     print("[I] Listening on 40001...")
     while True:
-        conn, addr = svr.accept()
-        print("[I] Received connection from: %s:%d" % addr)
-        header_len = conn.recv(4)
-        if header_len:
-            print("[I] Ready to receive data.")
-        header_len = struct.unpack('i', header_len)[0]
-        data = conn.recv(header_len).decode("utf-8")
-        data = json.loads(data)
-        if data:
-            cmd = data["command"]
-            if cmd == "node_added":
-                node_added(conn)
-            elif cmd == "config_changed":
-                config_changed(conn, data["filesize"])
+        try:
+            conn, addr = svr.accept()
+            print("[I] Received connection from: %s:%d" % addr)
+            header_len = conn.recv(4)
+            if header_len:
+                print("[I] Ready to receive data.")
+            header_len = struct.unpack('i', header_len)[0]
+            data = conn.recv(header_len).decode("utf-8")
+            data = json.loads(data)
+            if data:
+                cmd = data["command"]
+                if cmd == "node_added":
+                    node_added(conn)
+                elif cmd == "config_changed":
+                    config_changed(conn, data["filesize"])
+                else:
+                    print("[E] Unsupported command: %s." % cmd)
             else:
-                print("[E] Unsupported command: %s." % cmd)
-        else:
-            print("[E] No data received.")
-        conn.close()
+                print("[E] No data received.")
+            conn.close()
+        except KeyboardInterrupt as e:
+            exit(0)
