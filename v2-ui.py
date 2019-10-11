@@ -69,13 +69,21 @@ if __name__ == '__main__':
             print('Set port to ' + sys.argv[2] + ' successfully')
         elif sys.argv[1] == 'addnode' and len(sys.argv) == 4:
             cmd2node.node_added(sys.argv[2], sys.argv[3])
-            # cmd2node.config_changed()
+        elif sys.argv[1] == 'delnode' and len(sys.argv) == 3:
+            cmd2node.del_node(int(sys.argv[2]))
+        elif sys.argv[1] == 'listnode':
+            cmd2node.list_nodes()
+        elif sys.argv[1] == 'syncconfig':
+            cmd2node.config_changed()
         else:
             print('Invalid command')
             print('resetconfig: Reset all panel settings to default values')
             print('resetuser: Reset username and password to \'admin\'')
-            print('setport: Set port')
-            print('addnode: Add node server')
+            print('setport port: Set port')
+            print('addnode address remark: Add node server')
+            print('delnode id: Remove the node server with id')
+            print('listnode: List all node server')
+            print('syncconfig: Sync config file to all node server')
     else:
         logging_init()
         try:

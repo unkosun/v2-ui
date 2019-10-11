@@ -14,9 +14,13 @@ def config_changed():
     svrs = Server.query.all()
     config_path = Setting.query.filter_by(key="v2_config_path").first()
     cli = socket(AF_INET, SOCK_STREAM)
+    cli.settimeout(5)
     for svr in svrs:
         print("[I] Ready to send config file to server: %s(%s)..." % (svr.address, svr.remark), end='')
-        cli.connect((svr.address, 40001))
+        try:
+            cli.connect((svr.address, 40001))
+        except timeout as e:
+            continue
         filename = config_path.value
         filebytes = os.path.getsize(filename)
         header = {
@@ -54,3 +58,15 @@ def node_added(address, remark):
     else:
         print(data)
     cli.close()
+
+
+def list_nodes():
+    svrs = Server.query.all()
+    for svr in svrs:
+        print("%02d: %s %s" % (svr.id, svr.address, svr.remark))
+
+
+def del_node(id):
+    Server.query.filter_by(id=id).delete()
+    db.session.commit()
+    print("Server with id: %d has been deleted" % id)
