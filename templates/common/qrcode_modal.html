@@ -61,7 +61,7 @@
         el: '#qrcode-modal',
         data: {
             qrModal: qrModal,
-            servers: {{ servers | safe }},
+            servers: {{ servers | default("''") | safe }},
             inbounds: {{ inbounds | safe }},
         },
         methods: {

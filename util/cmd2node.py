@@ -13,6 +13,8 @@ import struct
 def config_changed():
     svrs = Server.query.all()
     config_path = Setting.query.filter_by(key="v2_config_path").first()
+    total = len(svrs)
+    suc = 0
     for svr in svrs:
         cli = socket(AF_INET, SOCK_STREAM)
         cli.settimeout(5)
@@ -38,6 +40,8 @@ def config_changed():
             cli.sendall(data)
         print("[I] Send config file to server [%s] success." % svr.remark)
         cli.close()
+        suc += 1
+    print("[I] %d/%d successfully synced." % (suc, total))
 
 
 def node_added(address, remark):
