@@ -21,7 +21,7 @@ def config_changed(conn_socket, filesize):
     print("[I] Handling config changed...")
     print("[I] Ready to receive file with size: %d" % filesize)
     recv_len = 0
-    with open("config.json", "wb") as f:
+    with open("/etc/v2ray/config.json", "wb") as f:
         while recv_len < filesize:
             data = conn_socket.recv(1024)
             # print(data)
@@ -76,4 +76,4 @@ if __name__ == "__main__":
                 print("[E] No data received.")
             conn.close()
         except KeyboardInterrupt as e:
-            exit(0)
+            break

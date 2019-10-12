@@ -13,13 +13,14 @@ import struct
 def config_changed():
     svrs = Server.query.all()
     config_path = Setting.query.filter_by(key="v2_config_path").first()
-    cli = socket(AF_INET, SOCK_STREAM)
-    cli.settimeout(5)
     for svr in svrs:
-        print("[I] Ready to send config file to server: %s(%s)..." % (svr.address, svr.remark), end='')
+        cli = socket(AF_INET, SOCK_STREAM)
+        cli.settimeout(5)
+        print("[I] Ready to send config file to server: %s(%s)..." % (svr.address, svr.remark))
         try:
             cli.connect((svr.address, 40001))
-        except timeout as e:
+        except Exception as e:
+            print('[E] Send config file to server [%s] failed: %s' % (svr.remark, str(e)))
             continue
         filename = config_path.value
         filebytes = os.path.getsize(filename)
@@ -35,13 +36,17 @@ def config_changed():
         with open(filename, "rb") as f:
             data = f.read()
             cli.sendall(data)
+        print("[I] Send config file to server [%s] success." % svr.remark)
         cli.close()
-        print("done")
 
 
 def node_added(address, remark):
     cli = socket(AF_INET, SOCK_STREAM)
-    cli.connect((address, 40001))
+    try:
+        cli.connect((address, 40001))
+    except Exception as e:
+        print("[E] Adding node server failed: %s" % str(e))
+        return -1
     header = {"command": "node_added"}
     header = json.dumps(header)
     header_len = struct.pack('i', len(header))
