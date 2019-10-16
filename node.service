@@ -1,0 +1,11 @@
+[Unit]
+Description=v2-ui node Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/node/node
+
+[Install]
+WantedBy=multi-user.target

@@ -92,7 +92,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://blog.sprov.xyz/v2-ui.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/690933449/v2-ui/master/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -111,7 +111,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://blog.sprov.xyz/v2-ui.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/690933449/v2-ui/master/install.sh)
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启面板${plain}"
         exit
@@ -278,6 +278,15 @@ disable() {
     fi
 }
 
+addnode(){
+    /usr/local/v2-ui/v2-ui $1 $2
+    if [[ $? == 0 ]]; then
+        echo -e "$(green)添加节点成功$(plain)"
+    else
+        echo -e "$(green)添加节点失败，请检查本机与目标节点之间的网络是否通畅或者目标节点上的监听程序是否正常运行$(plain)"
+    fi
+}
+
 show_log() {
     echo && echo -n -e "面板使用过程中可能会输出许多 WARNING 日志，如果面板使用没有什么问题的话，那就没有问题，按回车继续: " && read temp
     tail -f /etc/v2-ui/v2-ui.log
@@ -300,7 +309,7 @@ install_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/v2-ui -N --no-check-certificate https://github.com/sprov065/v2-ui/raw/master/v2-ui.sh
+    wget -O /usr/bin/v2-ui -N --no-check-certificate https://github.com/690933449/v2-ui/raw/master/v2-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
         echo -e "${red}下载脚本失败，请检查本机能否连接 Github${plain}"
@@ -483,6 +492,8 @@ if [[ $# > 0 ]]; then
         "enable") check_install 0 && enable 0
         ;;
         "disable") check_install 0 && disable 0
+        ;;
+        "addnode") addnode $2 $3
         ;;
         "log") check_install 0 && show_log 0
         ;;
