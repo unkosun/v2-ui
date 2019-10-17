@@ -75,5 +75,8 @@ if __name__ == "__main__":
             else:
                 print("[E] No data received.")
             conn.close()
+        except Exception as e:
+            print("[E] Catched exceptions: %s " % str(e))
+            continue
         except KeyboardInterrupt as e:
             break
