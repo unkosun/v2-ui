@@ -25,12 +25,38 @@ python v2-ui.py [ resetconfig | resetuser | setport ]
 
 `pyinstaller v2-ui.spec` 
 
+`pyinstaller node.py`
+
+`cp node.sevice dist/node/`
+
+## 新增功能
+
+### 面板功能
+
+- 实现多用户复用端口
+
+### 面板操作脚本
+
+```
+v2-ui addnode addr remark  - 添加子节点服务器
+v2-ui delnode id           - 删除子节点服务器
+v2-ui listnodes            - 列出所有子节点服务器
+v2-ui syncconfig           - 与节点同步配置文件
+```
+
+### 子节点监听程序
+
+部署在子节点服务器上，监听接收来自主站面板的命令：
+
+- 主站增加该子节点服务器时，与其进行确认
+- 主站配置文件更新时，通过与监听程序通信传输配置文件
+
 ***
 > 以下为原文
 ***
 
 # 捐赠支持
-如果你觉得面板好用的话，可以考虑一下捐赠支持，金额随意，感谢支持。[点我](https://blog.sprov.xyz/go/support-paypal)
+如果你觉得面板好用的话，可以考虑一下捐赠支持，金额随意，感谢支持。
 
 # v2-ui
 支持多协议多用户的 v2ray 面板，Support multi-protocol multi-user v2ray panel
