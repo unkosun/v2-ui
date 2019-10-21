@@ -27,10 +27,24 @@
                             <a-row>
                                 <a-input v-model="searchKey" placeholder="{{ _('search') }}" autofocus></a-input>
                             </a-row>
-                            <a-row>
-                                <a-col :xs="24" :sm="24" :lg="12">
+                            <a-row type="flex" justify="start" align="middle">
+                                <a-col :xs="6" :sm="6" :lg="3">
                                     {{ _('total customers') }}：
                                     <a-tag color="green">[[ customers.length ]]</a-tag>
+                                </a-col>
+                                <a-col :xs="6" :sm="6" :lg="3">
+                                    {{ _('expired customers') }}：
+                                    <a-tag color="red">[[ expiredCustomers.length ]]</a-tag>
+                                </a-col>
+                                <a-col :xs="6" :sm="6" :lg="2">
+                                    <a-checkbox :checked="unexpiredChecked" @change="unexpiredChanged">
+                                        {{ _('unexpired') }}
+                                    </a-checkbox >
+                                </a-col>
+                                <a-col :xs="6" :sm="6" :lg="2">
+                                    <a-checkbox :checked="expiredChecked" @change="expiredChanged">
+                                        {{ _('expired') }}
+                                    </a-checkbox>
                                 </a-col>
                             </a-row>
                         </a-card>
@@ -86,8 +100,12 @@
             data: {
                 ip: location.hostname,
                 spinning: false,
+                unexpiredChecked: true,
+                expiredChecked: true,
                 inbounds: [],
                 customers: [],
+                unexpiredCustomers: [],
+                expiredCustomers: [],
                 searchedCustomers: [],
                 searchKey: '',
             },
@@ -107,11 +125,43 @@
                         error: () => this.loading(false)
                     });
                 },
+                unexpiredChanged(e){
+                    this.unexpiredChecked = e.target.checked;
+                    this.searchCustomers(this.searchKey);
+                },
+                expiredChanged(e){
+                    this.expiredChecked = e.target.checked;
+                    this.searchCustomers(this.searchKey);
+                },
+                checkBox(customers){
+                    if (this.unexpiredChecked && this.expiredChecked) // both checked, show all customers
+                        this.searchedCustomers = customers;
+                    else{
+                        let checkedCustomers = [];
+                        if (this.unexpiredChecked){ // only unexpired checked, show unexpired only
+                            checkedCustomers = customers.filter(customer => {
+                                return customer.enable;
+                            });
+                        }
+                        if (this.expiredChecked){ // only expired checked, show expired only
+                            checkedCustomers = customers.filter(customer => {
+                                return !customer.enable;
+                            });
+                        }
+                        this.searchedCustomers = checkedCustomers;
+                    }
+                },
                 setCustomers(customers) {
                     this.customers = customers.map(customer => {
                         customer.enable = (new Date(Date.now())).getTime() < getDateFromStr(customer.endDate);
                         return Customer.fromJson(customer);
                     }).reverse();
+                    this.unexpiredCustomers = this.customers.filter(customer => {
+                                return customer.enable;
+                            });
+                    this.expiredCustomers = this.customers.filter(customer => {
+                                return !customer.enable;
+                            });
                     this.searchCustomers(this.searchKey);
                 },
                 searchCustomers(key) {
@@ -125,6 +175,7 @@
                             }
                         });
                     }
+                    this.checkBox(this.searchedCustomers);
                 },
                 openAddCustomer() {
                     inModal.show({
