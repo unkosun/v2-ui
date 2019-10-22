@@ -743,9 +743,20 @@ msgstr "续费"
 msgid "renew customer"
 msgstr "续费"
 
+msgid "generate"
+msgstr "生成"
+
 msgid "adding duration"
 msgstr "增加时长"
 
 msgid "total duration"
 msgstr "总时长"
 
+msgid "expired customers"
+msgstr "到期用户数"
+
+msgid "unexpired"
+msgstr "未到期"
+
+msgid "expired"
+msgstr "已到期"

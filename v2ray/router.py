@@ -2,11 +2,12 @@ import base64
 import copy
 import json
 
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, Response
 from flask_babel import gettext
 from datetime import datetime
 
 from base.models import Msg
+from base.router import base_bp
 from init import db
 from util import config, server_info
 from util.v2_jobs import v2_config_change
@@ -205,7 +206,7 @@ def get_servers():
     return jsonify([s.to_json() for s in Server.query.all()])
 
 
-@v2ray_bp.route('subscribe_vmess/<uuid>', methods=['GET'])
+@base_bp.route('subscribe_vmess/<uuid>', methods=['GET'])
 def subscribe_vmess(uuid):
     inbs = Inbound.query.filter_by(protocol='vmess').all()
     custm = Customers.query.filter_by(uuid=uuid).one()
@@ -256,9 +257,8 @@ def subscribe_vmess(uuid):
             vmess_links.append("vmess://" + bytes.decode(base64.b64encode(json.dumps(tmp).encode('utf-8'))))
     # concat multiple links with '\n'
     vmess_string = '\n'.join(vmess_links)
-    # vmess_string ="dm1lc3M6Ly9ldzBLSUNBaWRpSTZJQ0l5SWl3TkNpQWdJbkJ6SWpvZ0lraExNaTB5TURnek5TSXNEUW9nSUNKaFpHUWlPaUFpYUdzeWRqWXVZM0p2YzNObWFYSmxkMkZzYkM1M2FXNGlMQTBLSUNBaWNHOXlkQ0k2SUNJeU1EZ3pOU0lzRFFvZ0lDSnBaQ0k2SUNKaU9USTNNR0ppTkMweU9XVTBMVFF5WXprdFl6VmxNaTAyWkdGaU1XSmtOVFl3TTJJaUxBMEtJQ0FpWVdsa0lqb2dJalFpTEEwS0lDQWlibVYwSWpvZ0luUmpjQ0lzRFFvZ0lDSjBlWEJsSWpvZ0ltNXZibVVpTEEwS0lDQWlhRzl6ZENJNklDSWlMQTBLSUNBaWNHRjBhQ0k2SUNJaUxBMEtJQ0FpZEd4eklqb2dJaUlOQ24wPQp2bWVzczovL2V3MEtJQ0FpZGlJNklDSXlJaXdOQ2lBZ0luQnpJam9nSWxOSE1WWk5aWE56SWl3TkNpQWdJbUZrWkNJNklDSnpaekV1WTNKdmMzTm1hWEpsZDJGc2JDNTNhVzRpTEEwS0lDQWljRzl5ZENJNklDSXlNRGd6TlNJc0RRb2dJQ0pwWkNJNklDSXpNV0k0WmpZeU5TMDFNbVZsTFRSbFpXRXRZbVptTXkwNVltTTROVFprT0dVM016Y2lMQTBLSUNBaVlXbGtJam9nSWpBaUxBMEtJQ0FpYm1WMElqb2dJblJqY0NJc0RRb2dJQ0owZVhCbElqb2dJbTV2Ym1VaUxBMEtJQ0FpYUc5emRDSTZJQ0lpTEEwS0lDQWljR0YwYUNJNklDSWlMQTBLSUNBaWRHeHpJam9nSWlJTkNuMD0Kc3M6Ly9ZV1Z6TFRFeU9DMWpabUk2TmswM0xYRnNTaTF0WmtFdFpYaFpRR3B3ZGpZdVkzSnZjM05tYVhKbGQyRnNiQzUzYVc0Nk56QXdNQT09I2pwdjYKdm1lc3M6Ly9ldzBLSUNBaWRpSTZJQ0l5SWl3TkNpQWdJbkJ6SWpvZ0lsTkhNVlp0WlhOeklpd05DaUFnSW1Ga1pDSTZJQ0p6WnpFdVkzSnZjM05tYVhKbGQyRnNiQzUzYVc0aUxBMEtJQ0FpY0c5eWRDSTZJQ0l6TnpJd01pSXNEUW9nSUNKcFpDSTZJQ0l4Wm1SalpXSTROUzAzWW1NMkxUUTVNRFl0WmprMk5pMHpOMk5oWVRCbE5XRm1OelVpTEEwS0lDQWlZV2xrSWpvZ0lqUWlMQTBLSUNBaWJtVjBJam9nSW10amNDSXNEUW9nSUNKMGVYQmxJam9nSW01dmJtVWlMQTBLSUNBaWFHOXpkQ0k2SUNJaUxBMEtJQ0FpY0dGMGFDSTZJQ0lpTEEwS0lDQWlkR3h6SWpvZ0lpSU5DbjA9Cg=="
     # base64 encodes
-    return base64.b64encode(vmess_string.encode('utf-8'))
+    return Response(base64.b64encode(vmess_string.encode('utf-8')), mimetype='text/plain')
 
 
 def add_if_not_none(d, key, value):
