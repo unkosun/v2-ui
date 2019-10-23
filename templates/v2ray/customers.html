@@ -52,10 +52,12 @@
                     <a-card v-if="customers.length === 0">
                         {{ _('No account, please add an account first') }}
                     </a-card>
-                    <transition-group tag="div" name="list">
-                        <a-card v-for="customer in searchedCustomers" :key="customer.identifier" hoverable style="float:left">
+                    <transition-group tag="div" name="list" style="margin-left: 5%;">
+                        <a-card v-for="customer in searchedCustomers" :key="customer.uuid" hoverable
+                                style="float:left; margin-right: 2%;">
                             <div slot="title">
                                 <a-tag class="hidden-sm-and-down" color="green">vmess</a-tag>
+                                <a-button class="sublink" type="primary" icon="link" @click="getSubLink(customer)"></a-button>
                                 <a-button type="primary" icon="qrcode"
                                           @click="qrModal.show(
                                                     '{{ _('qrcode') }}',
@@ -108,6 +110,8 @@
                 expiredCustomers: [],
                 searchedCustomers: [],
                 searchKey: '',
+                clipboard: null,
+                content: '',
             },
             methods: {
                 loading(spinning=true) {
@@ -251,6 +255,16 @@
                         cancelText: '{{ _('cancel') }}',
                         onOk: () => this.submit('/v2ray/customer/del/' + customer.uuid)
                     });
+                },
+                getSubLink(customer){
+                    this.content = 'http://'+location.hostname+':'+location.port+'/subscribe_vmess/'+customer.uuid;
+                    if (this.clipboard === null){
+                        this.clipboard = new ClipboardJS('.sublink', {
+                            text: () => this.content,
+                        });
+                        // console.log(this.content);
+                        this.clipboard.on('success', () => this.$message.success('{{ _('copied') }} 🎉'));
+                    }
                 },
                 submit(url, data, modal, success, error) {
                     post({
