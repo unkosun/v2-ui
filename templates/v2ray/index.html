@@ -105,7 +105,100 @@
                     </a-col>
                 </a-row>
                 </transition>
-            </a-layout-content>
+                <div v-for="nodeStatus in nodesStatus" :key="nodeStatus.remark" >
+                    <transition name="list" appear>
+                    <a-row>
+                        <a-col :sm="24" :md="12">
+                            <a-card hoverable>
+                                <a-row>
+                                    <a-col :span="12">
+                                        {{ _('node remark') }}：[[ nodeStatus.remark ]]
+                                    </a-col>
+                                    <a-col :span="12">
+                                        {{ _('node address') }}：[[ nodeStatus.address ]]
+                                    </a-col>
+                                </a-row>
+                                <a-row>
+                                    <a-col :span="12">
+                                        v2ray {{ _('status') }}：<a-tag :color="nodeStatus.v2.color">[[ nodeStatus.v2.stat ]]</a-tag>
+                                    </a-col>
+                                    <a-col :span="12">
+                                         {{ _('uptime') }}：<a-tag color="#87d068">[[ nodeStatus.uptime ]]</a-tag>
+                                    </a-col>
+                                </a-row>
+                                <a-row>
+                                    <a-col :span="12">
+                                        {{ _('uptime') }}：<a-tag color="#87d068">[[ nodeStatus.uptime ]]</a-tag>
+                                    </a-col>
+                                    <a-col :span="12">
+                                        tcp / udp {{ _('connections') }}：[[ nodeStatus.tcp_count ]] / [[ nodeStatus.udp_count ]]
+                                    </a-col>
+                                </a-row>
+                            </a-card>
+                        </a-col>
+                        <a-col :sm="24" :md="12">
+                            <a-card hoverable>
+                                <a-row>
+                                    <a-col :span="12">
+                                        <a-icon type="arrow-up"></a-icon> [[ nodeStatus.net_io.up ]] / S
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <a-icon type="arrow-down"></a-icon> [[ nodeStatus.net_io.down ]] / S
+                                    </a-col>
+                                </a-row>
+                                <a-row>
+                                    <a-col :span="12">
+
+                                    </a-col>
+                                    <a-col :span="12">
+
+                                    </a-col>
+                                </a-row>
+                                <a-row>
+                                    <a-col :span="12">
+                                        <a-icon type="cloud-upload"></a-icon> [[ nodeStatus.net_traffic.sent ]]
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <a-icon type="cloud-download"></a-icon> [[ nodeStatus.net_traffic.recv ]]
+                                    </a-col>
+                                </a-row>
+                            </a-card>
+                        </a-col>
+                    </a-row>
+                    </transition>
+                    <transition name="list" appear>
+                    <a-row>
+                        <a-card hoverable>
+                            <a-row>
+                                <a-col :sm="24" :md="36">
+                                        <a-col :span="8" style="text-align: center">
+                                            <a-progress type="dashboard" status="normal"
+                                                        :stroke-color="nodeStatus.cpu.color"
+                                                        :percent="nodeStatus.cpu.percent"></a-progress>
+                                            <div>CPU</div>
+                                        </a-col>
+                                        <a-col :span="8" style="text-align: center">
+                                            <a-progress type="dashboard" status="normal"
+                                                        :stroke-color="nodeStatus.memory.color"
+                                                        :percent="nodeStatus.memory.percent"></a-progress>
+                                            <div>{{ _('memory') }}：[[ sizeFormat(nodeStatus.memory.used) ]] /
+                                                [[ sizeFormat(nodeStatus.memory.total) ]]</div>
+                                        </a-col>
+                                        <a-col :span="8" style="text-align: center">
+                                            <a-progress type="dashboard" status="normal"
+                                                        :stroke-color="nodeStatus.disk.color"
+                                                        :percent="nodeStatus.disk.percent"></a-progress>
+                                            <div>{{ _('disk') }}：[[ sizeFormat(nodeStatus.disk.used) ]] /
+                                                [[ sizeFormat(nodeStatus.disk.total) ]]</div>
+                                        </a-col>
+                                </a-col>
+                            </a-row>
+                        </a-card>
+                    </a-row>
+                    </transition>
+                </div>
+			</a-layout-content>
+
         </a-layout>
     </a-layout>
 
@@ -130,12 +223,28 @@
             tcp_count: '..',
             udp_count: '..',
         };
-
+        let nodesStatus = {
+            v2: {
+                color: '',
+                stat: '{{ _('loading') }}',
+            },
+            uptime: '{{ _('loading') }}',
+            cpu: { percent: 0 },
+            memory: { percent: 0 },
+            disk: { percent: 0 },
+            net_io: { up: '..', down: '..' },
+            net_traffic: { sent: '..', recv: '..' },
+            tcp_count: '..',
+            udp_count: '..',
+            remark: '..',
+            address: '..',
+        };
         let app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app',
             data: {
                 status: status,
+                nodesStatus: [],
             },
             methods: {
                 getStatus() {
@@ -168,6 +277,37 @@
                     status.net_traffic.recv = sizeFormat(status.net_traffic.recv);
                     this.status = status;
                 },
+                getNodesStatus() {
+                    get({
+                        url: '/server/nodes_status',
+                        success: data => {
+                            this.setNodesStatus(data);
+                        }
+                    });
+                },
+                setNodesStatus(nodesStatus) {
+                    this.nodesStatus = nodesStatus.map(nodeStatus => {
+                        switch (nodeStatus.v2.code) {
+                            case 0: nodeStatus.v2.stat = '{{ _('running') }}'; nodeStatus.v2.color = '#67C23A'; break;
+                            case 1: nodeStatus.v2.stat = '{{ _('not running') }}'; nodeStatus.v2.color = '#E6A23C'; break;
+                            default: nodeStatus.v2.stat = '{{ _('error') }}'; nodeStatus.v2.color = '#F56C6C';
+                        }
+                        nodeStatus.remark = nodeStatus.remark;
+                        nodeStatus.address = nodeStatus.address;
+                        nodeStatus.uptime = formatSecond(nodeStatus.uptime);
+                        nodeStatus.cpu.percent = nodeStatus.cpu.percent.toFixed(2);
+                        nodeStatus.memory.percent = (nodeStatus.memory.used / nodeStatus.memory.total * 100).toFixed(2);
+                        nodeStatus.disk.percent = (nodeStatus.disk.used / nodeStatus.disk.total * 100).toFixed(2);
+                        nodeStatus.cpu.color = this.computeColor(nodeStatus.cpu.percent);
+                        nodeStatus.memory.color = this.computeColor(nodeStatus.memory.percent);
+                        nodeStatus.disk.color = this.computeColor(nodeStatus.disk.percent);
+                        nodeStatus.net_io.up = sizeFormat(nodeStatus.net_io.up);
+                        nodeStatus.net_io.down = sizeFormat(nodeStatus.net_io.down);
+                        nodeStatus.net_traffic.sent = sizeFormat(nodeStatus.net_traffic.sent);
+                        nodeStatus.net_traffic.recv = sizeFormat(nodeStatus.net_traffic.recv);
+                        return nodeStatus
+                    }).reverse();
+                },
                 computeColor(percent) {
                     if (percent < 80) {
                         return '#67C23A';
@@ -180,7 +320,9 @@
             },
             mounted() {
                 this.setStatus({{ status | safe }});
+                this.setNodesStatus({{ nodesStatus | safe }});
                 setInterval(this.getStatus, 2000);
+                setInterval(this.getNodesStatus, 2000);
             },
         });
 

@@ -5,6 +5,7 @@ from flask_babel import gettext
 from base.models import Msg, User
 from init import db
 from util import server_info, config
+from util import cmd2node
 
 server_bp = Blueprint('server', __name__, url_prefix='/server')
 
@@ -14,6 +15,10 @@ def status():
     result = server_info.get_status()
     return jsonify(result)
 
+@server_bp.route('/nodes_status', methods=['GET'])
+def nodes_status():
+    result = cmd2node.list_nodes_status()
+    return jsonify(result)
 
 @server_bp.route('/settings', methods=['GET'])
 def settings():

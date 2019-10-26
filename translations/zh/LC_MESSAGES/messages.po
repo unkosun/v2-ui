@@ -760,3 +760,9 @@ msgstr "未到期"
 
 msgid "expired"
 msgstr "已到期"
+
+msgid "node remark"
+msgstr "子节点标签"
+
+msgid "node address"
+msgstr "子节点地址"

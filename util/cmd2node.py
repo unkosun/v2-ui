@@ -79,3 +79,38 @@ def del_node(id):
     Server.query.filter_by(id=id).delete()
     db.session.commit()
     print("Server with id: %d has been deleted" % id)
+
+def list_nodes_status():
+    svrs = Server.query.all()
+    svrs_status = []
+    for i, svr in enumerate(svrs):
+        svr_status = node_status(svr)
+        svrs_status.append(svr_status)
+    return svrs_status
+
+def node_status(svr):
+    cli = socket(AF_INET, SOCK_STREAM)
+    cli.settimeout(5)
+    print("[I] Start getting node status: %s(%s)..." % (svr.address, svr.remark), end='')
+    try:
+        cli.connect((svr.address, 40001))
+    except Exception as e:
+        print('[E] Send config file to server [%s] failed: %s' % (svr.remark, str(e)))
+        return -1
+
+    header = {"command": "node_status"}
+    header = json.dumps(header)
+    header_len = struct.pack('i', len(header))
+    cli.send(header_len)
+    cli.send(header.encode("utf-8"))
+    print("[I] Send CMD to server [%s] success." % svr.remark)
+
+    data_len = cli.recv(4)
+    if data_len:
+        print("[I] Ready to receive data.")
+    data_len = struct.unpack('i', data_len)[0]
+    data = cli.recv(data_len).decode("utf-8")
+    data = {**json.loads(data), **{"remark": svr.remark, "address":svr.address}}
+    cli.close()
+    print("[I] Received data")
+    return data

@@ -10,12 +10,23 @@ from socket import *
 import json
 import struct
 import logging
+from util import node_info
+from util.schedule_util import start_schedule
 import subprocess
 
 
 def node_added(conn_socket):
     logging.debug("[I] Handling node added...")
     conn_socket.send("ack".encode("utf-8"))
+
+
+def node_state(conn_socket):
+    logging.debug("[I] Handling node state...")
+    data = json.dumps(node_info.get_status())
+    print(data)
+    data_len = struct.pack('i', len(data))
+    conn.send(data_len)
+    conn_socket.sendall(data.encode("utf-8"))
 
 
 def config_changed(conn_socket, filesize):
@@ -46,6 +57,7 @@ def config_changed(conn_socket, filesize):
 
 
 if __name__ == "__main__":
+    start_schedule()
     logging.basicConfig(filename='/etc/v2-node/v2-node.log',
                         datefmt='%Y-%m-%d %H:%M:%S',
                         format='%(asctime)s-%(name)s-%(levelname)s-%(message)s',
@@ -74,6 +86,8 @@ if __name__ == "__main__":
                     node_added(conn)
                 elif cmd == "config_changed":
                     config_changed(conn, data["filesize"])
+                elif cmd == "node_status":
+                    node_state(conn)
                 else:
                     logging.error("[E] Unsupported command: %s." % cmd)
             else:

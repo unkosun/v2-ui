@@ -21,8 +21,10 @@ __check_interval = config.get_v2_config_check_interval()
 @v2ray_bp.route('/', methods=['GET'])
 def index():
     from init import common_context
+    from util import cmd2node
     status = json.dumps(server_info.get_status(), ensure_ascii=False)
-    return render_template('v2ray/index.html', **common_context, status=status)
+    nodesStatus = json.dumps(cmd2node.list_nodes_status(), ensure_ascii=False)
+    return render_template('v2ray/index.html', **common_context, status=status, nodesStatus=nodesStatus)
 
 
 @v2ray_bp.route('/accounts/', methods=['GET'])
