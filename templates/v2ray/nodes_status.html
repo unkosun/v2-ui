@@ -1,0 +1,92 @@
+<div v-for="nodeStatus in nodesStatus" :key="nodeStatus.remark" >
+    <transition name="list" appear>
+    <a-row>
+        <a-col :sm="24" :md="12">
+            <a-card hoverable>
+                <a-row>
+                    <a-col :span="12">
+                        {{ _('node remark') }}：[[ nodeStatus.remark ]]
+                    </a-col>
+                    <a-col :span="12">
+                        {{ _('node address') }}：[[ nodeStatus.address ]]
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="12">
+                        v2ray {{ _('status') }}：<a-tag :color="nodeStatus.v2.color">[[ nodeStatus.v2.stat ]]</a-tag>
+                    </a-col>
+                    <a-col :span="12">
+                         {{ _('uptime') }}：<a-tag color="#87d068">[[ nodeStatus.uptime ]]</a-tag>
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="12">
+                        {{ _('uptime') }}：<a-tag color="#87d068">[[ nodeStatus.uptime ]]</a-tag>
+                    </a-col>
+                    <a-col :span="12">
+                        tcp / udp {{ _('connections') }}：[[ nodeStatus.tcp_count ]] / [[ nodeStatus.udp_count ]]
+                    </a-col>
+                </a-row>
+            </a-card>
+        </a-col>
+        <a-col :sm="24" :md="12">
+            <a-card hoverable>
+                <a-row>
+                    <a-col :span="12">
+                        <a-icon type="arrow-up"></a-icon> [[ nodeStatus.net_io.up ]] / S
+                    </a-col>
+                    <a-col :span="12">
+                        <a-icon type="arrow-down"></a-icon> [[ nodeStatus.net_io.down ]] / S
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="12">
+
+                    </a-col>
+                    <a-col :span="12">
+
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="12">
+                        <a-icon type="cloud-upload"></a-icon> [[ nodeStatus.net_traffic.sent ]]
+                    </a-col>
+                    <a-col :span="12">
+                        <a-icon type="cloud-download"></a-icon> [[ nodeStatus.net_traffic.recv ]]
+                    </a-col>
+                </a-row>
+            </a-card>
+        </a-col>
+    </a-row>
+    </transition>
+    <transition name="list" appear>
+    <a-row>
+        <a-card hoverable>
+            <a-row>
+                <a-col :sm="24" :md="36">
+                        <a-col :span="8" style="text-align: center">
+                            <a-progress type="dashboard" status="normal"
+                                        :stroke-color="nodeStatus.cpu.color"
+                                        :percent="nodeStatus.cpu.percent"></a-progress>
+                            <div>CPU</div>
+                        </a-col>
+                        <a-col :span="8" style="text-align: center">
+                            <a-progress type="dashboard" status="normal"
+                                        :stroke-color="nodeStatus.memory.color"
+                                        :percent="nodeStatus.memory.percent"></a-progress>
+                            <div>{{ _('memory') }}：[[ sizeFormat(nodeStatus.memory.used) ]] /
+                                [[ sizeFormat(nodeStatus.memory.total) ]]</div>
+                        </a-col>
+                        <a-col :span="8" style="text-align: center">
+                            <a-progress type="dashboard" status="normal"
+                                        :stroke-color="nodeStatus.disk.color"
+                                        :percent="nodeStatus.disk.percent"></a-progress>
+                            <div>{{ _('disk') }}：[[ sizeFormat(nodeStatus.disk.used) ]] /
+                                [[ sizeFormat(nodeStatus.disk.total) ]]</div>
+                        </a-col>
+                </a-col>
+            </a-row>
+        </a-card>
+    </a-row>
+    </transition>
+</div>
