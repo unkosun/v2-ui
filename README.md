@@ -1,6 +1,12 @@
 中文 | [English](README.en.md)
 
 # 开发人员
+
+## 开发环境
+- Python 3.6+
+
+> 开发环境对系统无要求，因为最终运行的二进制文件由 `pyinstaller` 决定
+
 ## 项目中用到的第三方库
 - Flask
 - flask_babel
@@ -11,7 +17,7 @@
 
 ## 运行调试
 ```bash
-python v2-ui.py [ resetconfig | resetuser | setport ]
+python v2-ui.py [ resetconfig | resetuser | setport | addnode address remark | delnode id | listnodes | syncconfig ]
 ```
 
 ## 翻译
@@ -22,6 +28,9 @@ python v2-ui.py [ resetconfig | resetuser | setport ]
 
 ## 项目打包
 `pyi-makespec v2-ui.py`
+
+编辑 `v2-ui.spec` 文件中的 `datas` 
+> 参考本项目中的 [v2-ui.spec](v2-ui.spec)
 
 `pyinstaller v2-ui.spec` 
 

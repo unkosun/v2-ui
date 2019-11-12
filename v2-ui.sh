@@ -111,6 +111,11 @@ update() {
         fi
         return 0
     fi
+    echo -e "${green}开始备份...${plain}}"
+    systemctl stop v2-ui
+    cd /usr/local/
+    mv v2-ui v2-ui.bak
+    echo -e "${green}备份结束，开始更新...${plain}}"
     bash <(curl -Ls https://raw.githubusercontent.com/690933449/v2-ui/master/install.sh)
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启面板${plain}"
@@ -120,6 +125,21 @@ update() {
 #        else
 #            restart 0
 #        fi
+    else # fail in updating, now rollback
+        echo -e "${red}更新失败，开始回滚...${plain}"
+        systemctl stop v2-ui
+        cd /usr/local/
+        rm -rf /usr/local/v2-ui
+        mv v2-ui.bak v2-ui
+        cp -f v2-ui.service /etc/systemd/system/
+        systemctl daemon-reload
+        systemctl enable v2-ui
+        systemctl start v2-ui
+        if [[ $? == 0 ]];then
+            echo -e "${green}回滚成功${plain}"
+        else
+            echo -e "${red}回滚失败，请手动检查${plain}"
+        fi
     fi
 }
 
