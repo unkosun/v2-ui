@@ -115,5 +115,5 @@ install_v2-node() {
 
 echo -e "${green}开始安装${plain}"
 install_base
-install_v2ray
+# install_v2ray
 install_v2-node
